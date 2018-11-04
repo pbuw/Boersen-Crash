@@ -74,10 +74,18 @@ if ($drinkList->num_rows > 0) {
             $updateCurrentPrice = "UPDATE drink SET currentPrice='$currentPrice' WHERE id='$id'";
             $conn->query($updateCurrentPrice);
             $name = $drink["name"];
-            $random = rand(0,100);
-            if($random !== 1){
-                echo "<div class='item'></h1><h1>$currentPrice Fr.</h1> $name</div>";
+            $random = rand(0, 100);
+            if ($random !== 1) {
+                if ($currentPrice <= $minPrice + 2) {
+                    echo "<div class='item alert alert-warning' role='alert'><b>Warning</b><br><h1>$currentPrice Fr.</h1> $name</div>";
+                } elseif ($currentPrice >= $maxPrice - 3) {
+                    echo "<div class='item alert alert-success' role='alert'><h1>$currentPrice Fr.</h1> $name</div>";
+                } else {
+                    echo "<div class='item'></h1><h1>$currentPrice Fr.</h1> $name</div>";
+                }
+
             } else {
+
                 echo "<div class='item alert alert-danger' role='alert'><b>Special</b><br><h1>$minPrice Fr.</h1> $name</div>";
             }
 
