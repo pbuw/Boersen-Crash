@@ -1,7 +1,16 @@
 <head>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
 		  integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	<link rel="stylesheet" href="style/style.css">
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+			integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+			crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+			integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+			crossorigin="anonymous"></script>
+	<meta charset="UTF-8">
 </head>
+<body>
 <?php
 include '../database/connect.php';
 
@@ -11,7 +20,6 @@ $drinkList = $conn->query($getDrinks);
 if ($drinkList->num_rows > 0) {
     // output data of each row
     while ($drink = $drinkList->fetch_assoc()) {
-        echo "<hr>";
 
         $fk_drinkId = $drink["id"];
         $id = $drink["id"];
@@ -48,14 +56,15 @@ if ($drinkList->num_rows > 0) {
         $minPrice = $drink["minPrice"];
         $maxPrice = $drink["maxPrice"];
 
-        if ($currentPrice <= $minPrice ) {
+        if ($currentPrice <= $minPrice) {
+            $name = $drink["name"];
             if ($currentPrice >= $minPrice) {
-                echo "bärse krash";
+                echo "<div class='item alert alert-danger' role='alert'><b>Börsencrash</b><br><h1>$currentPrice Fr.</h1> $name</div>";
 
             } else {
                 $currentPrice = $minPrice;
 
-                echo "bärse krash";
+                echo "<div class='item alert alert-danger' role='alert'><b>Börsencrash</b><br><h1>$currentPrice Fr.</h1> $name</div>";
 
             }
         } else {
@@ -65,51 +74,17 @@ if ($drinkList->num_rows > 0) {
             $updateCurrentPrice = "UPDATE drink SET currentPrice='$currentPrice' WHERE id='$id'";
             $conn->query($updateCurrentPrice);
             $name = $drink["name"];
-            echo "Preis für <h1>$name</h1> ist momentan:";
-            echo $currentPrice;
+            $random = rand(0,100);
+            if($random !== 1){
+                echo "<div class='item'></h1><h1>$currentPrice Fr.</h1> $name</div>";
+            } else {
+                echo "<div class='item alert alert-danger' role='alert'><b>Special</b><br><h1>$minPrice Fr.</h1> $name</div>";
+            }
 
         }
-
+        echo "<hr>";
     }
 }
-/*
-        if ($drink["soldUnits"] > $average) {
-            $newPrice = $drink["currentPrice"] + 0.50;
-            if ($newPrice >= $drink["maxPrice"]) {
-                $newPrice = $drink["maxPrice"];
-            }
-        } elseif ($drink["soldUnits"] < $average) {
-            $newPrice = $drink["currentPrice"] - 0.50;
-            if ($newPrice < $drink["minPrice"]) {
-                $newPrice = $drink["minPrice"];
-            }
-        } elseif ($drink["soldUnits"] = $average) {
-            $newPrice = ($drink["maxPrice"] + $drink["minPrice"]) / 2;
-        } else {
-            $newPrice = $drink["currentPrice"];
-        }
-        switch (rand(1, 1000)) {
-            case 1:
-                $newPrice = $drink["minPrice"];
-                echo "<br><br><div class='alert alert-danger' role='alert'>Achtung Börsencrash! Preis für " . $drink["name"] . " ist <b>" . $newPrice . " Fr. </b><br></div>";
-                break;
-            default:
-                echo "<br>Preis für " . $drink["drinkname"] . ": " . $newPrice . " Fr. <br>";
-                break;
-        }
-        if ($newPrice == $drink["minPrice"]) {
-            echo "<br><br><div class='alert alert-danger' role='alert'>Achtung Börsencrash! Preis für " . $drink["name"] . " ist <b>" . $newPrice . " Fr. </b><br></div>";
-        }
-        $id = $drink["id"];
-        $sql3 = "UPDATE drink SET currentPrice='$newPrice' WHERE id=$id";
-        if ($conn->query($sql3) === TRUE) {
-        } else {
-            echo "Error updating record: " . $conn->error;
-        }
-    }
-} else {
-    echo "0 results";
-}
-*/
 header("refresh: 60;");
 ?>
+</body>
