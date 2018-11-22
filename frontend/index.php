@@ -12,10 +12,10 @@
 </head>
 <body>
 <?php
-include '../database/connect.php';
-
-$getDrinks = "SELECT id, name, minPrice, maxPrice, currentPrice, soldUnits, salesTime FROM drink";
-$drinkList = $conn->query($getDrinks);
+include '../database/database.php';
+include 'alert.php';
+$connection = database::getConnection();
+$drinkList = database::getResultByQuery("SELECT id, name, minPrice, maxPrice, currentPrice, soldUnits, salesTime FROM drink", $connection);
 
 if ($drinkList->num_rows > 0) {
     // output data of each row
@@ -23,8 +23,7 @@ if ($drinkList->num_rows > 0) {
 
         $fk_drinkId = $drink["id"];
         $id = $drink["id"];
-        $getAverage = "SELECT AVG(salesTime) AS average FROM ( SELECT * FROM salesHistory WHERE fk_drinkId='$fk_drinkId' ORDER BY id DESC LIMIT 7 ) AS average";
-        $averageList = $conn->query($getAverage);
+        $averageList = database::getResultByQuery("SELECT AVG(salesTime) AS average FROM ( SELECT * FROM salesHistory WHERE fk_drinkId='$fk_drinkId' ORDER BY id DESC LIMIT 7 ) AS average", $connection);
         while ($item = $averageList->fetch_assoc()) {
             $average = $item["average"];
         }
@@ -42,55 +41,49 @@ if ($drinkList->num_rows > 0) {
         } else {
             $currentPrice = $drinkCurrentPrice;
         }
-        $addPriceHistory = " INSERT INTO priceHistory( fk_drinkId, price) VALUES ('$fk_drinkId', '$currentPrice')";
-        $conn->query($addPriceHistory);
-        $getSalesTime = "SELECT * FROM drink WHERE id='$fk_drinkId' ORDER BY id DESC LIMIT 1";
-        $salesTimeList = $conn->query($getSalesTime);
+        //add price to pricehistory table
+        database::getResultByQuery(" INSERT INTO priceHistory( fk_drinkId, price) VALUES ('$fk_drinkId', '$currentPrice')", $connection);
+        $salesTimeList = database::getResultByQuery(" SELECT * FROM drink WHERE id='$fk_drinkId' ORDER BY id DESC LIMIT 1", $connection);
         while ($item = $salesTimeList->fetch_assoc()) {
             $salesTime = $item["salesTime"] + 1;
         }
-        $addSalesTime = "UPDATE drink SET salesTime='$salesTime' WHERE id='$id'";
-        $conn->query($addSalesTime);
-        $addSalesTimeHistory = " INSERT INTO salesHistory( fk_drinkId, salesTime, time) VALUES ('$fk_drinkId', '$salesTime', '0')";
-        $conn->query($addSalesTimeHistory);
+        // add salestime
+        database::getResultByQuery("UPDATE drink SET salesTime='$salesTime' WHERE id='$id'", $connection);
+        // add salestimehistory
+        database::getResultByQuery("INSERT INTO salesHistory( fk_drinkId, salesTime, time) VALUES ('$fk_drinkId', '$salesTime', '0')", $connection);
         $minPrice = $drink["minPrice"];
         $maxPrice = $drink["maxPrice"];
 
         if ($currentPrice <= $minPrice) {
             $name = $drink["name"];
             if ($currentPrice >= $minPrice) {
-                echo "<div class='item'> <div class='alert alert-danger' role='alert'><b>Börsencrash</b><br><h1>$currentPrice Fr.</h1> $name</div></div>";
-
-            } else {
                 $currentPrice = $minPrice;
 
-                echo "<div class='item'><div class=' alert alert-danger' role='alert'><b>Börsencrash</b><br><h1>$currentPrice Fr.</h1> $name</div></div>";
-
             }
+            alert::boersencrash($name, $currentPrice);
         } else {
             if ($currentPrice > $maxPrice) {
                 $currentPrice = $maxPrice;
             }
-            $updateCurrentPrice = "UPDATE drink SET currentPrice='$currentPrice' WHERE id='$id'";
-            $conn->query($updateCurrentPrice);
+            database::getResultByQuery("UPDATE drink SET currentPrice='$currentPrice' WHERE id='$id'", $connection);
             $name = $drink["name"];
             $random = rand(0, 100);
             if ($random !== 1) {
                 if ($currentPrice <= $minPrice + 2) {
-                    echo "<div class='item'> <div class=' alert alert-warning' role='alert'><b>Warning</b><br><h1>$currentPrice Fr.</h1> $name</div></div>";
+                    alert::warning($name, $currentPrice);
                 } elseif ($currentPrice >= $maxPrice - 3) {
-                    echo "<div class='item'><div class=' alert alert-success' role='alert'><h1>$currentPrice Fr.</h1> $name</div></div>";
+                    alert::success($name, $currentPrice);
                 } else {
-                    echo "<div class='item'></h1><h1>$currentPrice Fr.</h1> $name</div></div>";
+                    alert::normal($name, $currentPrice);
                 }
-
             } else {
-
-                echo "<div class='item'><div class=' alert alert-danger' role='alert'><b>Special</b><br><h1>$minPrice Fr.</h1> $name</div></div>";
+                alert::boersencrash($name, $currentPrice);
             }
 
         }
     }
+} else {
+    alert::error("No drinks registert");
 }
 header("refresh: 60;");
 ?>
