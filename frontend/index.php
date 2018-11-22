@@ -59,12 +59,12 @@ if ($drinkList->num_rows > 0) {
         if ($currentPrice <= $minPrice) {
             $name = $drink["name"];
             if ($currentPrice >= $minPrice) {
-                echo "<div class='item alert alert-danger' role='alert'><b>Börsencrash</b><br><h1>$currentPrice Fr.</h1> $name</div>";
+                echo "<div class='item'> <div class='alert alert-danger' role='alert'><b>Börsencrash</b><br><h1>$currentPrice Fr.</h1> $name</div></div>";
 
             } else {
                 $currentPrice = $minPrice;
 
-                echo "<div class='item alert alert-danger' role='alert'><b>Börsencrash</b><br><h1>$currentPrice Fr.</h1> $name</div>";
+                echo "<div class='item'><div class=' alert alert-danger' role='alert'><b>Börsencrash</b><br><h1>$currentPrice Fr.</h1> $name</div></div>";
 
             }
         } else {
@@ -77,20 +77,19 @@ if ($drinkList->num_rows > 0) {
             $random = rand(0, 100);
             if ($random !== 1) {
                 if ($currentPrice <= $minPrice + 2) {
-                    echo "<div class='item alert alert-warning' role='alert'><b>Warning</b><br><h1>$currentPrice Fr.</h1> $name</div>";
+                    echo "<div class='item'> <div class=' alert alert-warning' role='alert'><b>Warning</b><br><h1>$currentPrice Fr.</h1> $name</div></div>";
                 } elseif ($currentPrice >= $maxPrice - 3) {
-                    echo "<div class='item alert alert-success' role='alert'><h1>$currentPrice Fr.</h1> $name</div>";
+                    echo "<div class='item'><div class=' alert alert-success' role='alert'><h1>$currentPrice Fr.</h1> $name</div></div>";
                 } else {
-                    echo "<div class='item'></h1><h1>$currentPrice Fr.</h1> $name</div>";
+                    echo "<div class='item'></h1><h1>$currentPrice Fr.</h1> $name</div></div>";
                 }
 
             } else {
 
-                echo "<div class='item alert alert-danger' role='alert'><b>Special</b><br><h1>$minPrice Fr.</h1> $name</div>";
+                echo "<div class='item'><div class=' alert alert-danger' role='alert'><b>Special</b><br><h1>$minPrice Fr.</h1> $name</div></div>";
             }
 
         }
-        echo "<hr>";
     }
 }
 header("refresh: 60;");
