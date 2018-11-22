@@ -31,13 +31,13 @@ $soldUnits = $_GET["soldUnits"];
 
 $sql = "INSERT INTO drink(name, minPrice, maxPrice, currentPrice, soldUnits)
 VALUES ('$drinkname', '$minPrice', '$maxPrice', '$currentPrice', '$soldUnits')";
-if ($conn->query($sql) === TRUE) {
+if ($connection->query($sql) === TRUE) {
     echo "New record created successfully";
 } else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
+    echo "Error: " . $sql . "<br>" . $connection->error;
 }
 
-$conn->close();
+$connection->close();
 ?>
 
 </body>
