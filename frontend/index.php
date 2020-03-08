@@ -9,11 +9,14 @@
             integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
             crossorigin="anonymous"></script>
     <meta charset="UTF-8">
+    <title>Börsen Crash</title>
 </head>
 <body>
 <?php
 include '../database/database.php';
-include 'alert.php';
+include '../vendor/autoload.php';
+Mustache_Autoloader::register();
+include 'drinkManager.php';
 $connection = database::getConnection();
 $drinkList = database::getDrinks($connection);
 
@@ -21,52 +24,28 @@ if ($drinkList->num_rows > 0) {
     while ($drink = $drinkList->fetch_assoc()) {
         $part = ($drink["maxPrice"] - $drink["minPrice"]) / 3;
         if ($drink["currentPrice"] < $drink["minPrice"] + $part) {
-            if (rand(1, 3) == 3) {
-                if ($drink["minPrice"] > $drink["currentPrice"] - 0.5) {
-                    $price = $drink["currentPrice"];
-                } else {
-                    $price = $drink["currentPrice"] - 0.5;
-                }
+            $price = drinkManager::updateLowPrice($drink);
+            if ($price == $drink["minPrice"]) {
+                $flag = "lowest";
             } else {
-                $price = $drink["currentPrice"] + 0.5;
+                $flag = "low";
             }
         }
         if ($drink["currentPrice"] > $drink["minPrice"] + $part && $drink["currentPrice"] < $drink["maxPrice"] - $part) {
-            if (rand(1, 2) == 2) {
-                if ($drink["minPrice"] > $drink["currentPrice"] - 0.5) {
-                    $price = $drink["currentPrice"];
-                } else {
-                    $price = $drink["currentPrice"] - 0.5;
-                }
-            } else {
-                $price = $drink["currentPrice"] + 0.5;
-            }
+            $price = drinkManager::updateNormalPrice($drink);
+            $flag = "normal";
         }
         if ($drink["currentPrice"] > $drink["maxPrice"] - $part) {
-            if (rand(1, 3) == 3) {
-                if ($drink["maxPrice"] < $drink["currentPrice"] + 0.5) {
-                    $price = $drink["currentPrice"];
-                } else {
-                    $price = $drink["currentPrice"] + 0.5;
-                }
-            } else {
-                $price = $drink["currentPrice"] - 0.5;
-            }
+            $price = drinkManager::updateHighPrice($drink);
+            $flag = "high";
         }
         database::updateDrinkPrice($drink["id"], $price, $connection);
-
-        echo $drink["name"];
-        echo "<br>";
-        echo $drink["currentPrice"];
-        echo "<hr>";
-
-        //alert::normal($name, $currentPrice);
-        $drinkCurrentPrice = $drink["currentPrice"];
-        //alert::normal($name, $drinkCurrentPrice);
+        drinkManager::showDrink($drink, $flag);
     }
 } else {
     alert::error("No drinks registered");
 }
 header("refresh: 60;");
 ?>
+<div class="codia-banner"><br>Made possible with <img src="Logo-small-positiv.png" height="80px"></div>
 </body>

@@ -1,11 +1,79 @@
 body {
+  background-image: url("../background.jpg ");
+  background-position: center;
+  background-size: 100%;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  height: 100vh;
+  width: 100%;
   margin: 0;
   padding: 0;
-  display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
+  display: flex;
+  color: white;
+  text-align: center;
+
   .item {
+    height: 15%;
     padding: 20px;
+    margin: 20px;
     width: 250px;
+    border-radius: 20px;
+  }
+
+  .high {
+    background-color: rgba(0, 128, 0, 0.8);
+  }
+
+  .normal {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+
+  .low {
+    background-color: rgba(78, 0, 0, 0.8);
+  }
+
+  .lowest {
+    background-color: rgba(255, 0, 0, 0.5);
+
+    box-shadow: 0 0 0 rgb(255, 0, 0);
+    animation: pulse 2s infinite;
+  }
+
+  .codia-banner {
+    text-align: center;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.71);
+  }
+
+  @-webkit-keyframes pulse {
+    0% {
+      -webkit-box-shadow: 0 0 0 0 rgb(255, 0, 0);
+    }
+    70% {
+      -webkit-box-shadow: 0 0 0 30px rgba(204, 169, 44, 0);
+    }
+    100% {
+      -webkit-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+    }
+  }
+  @keyframes pulse {
+    0% {
+      -moz-box-shadow: 0 0 0 0 rgb(255, 0, 0);
+      box-shadow: 0 0 0 0 rgb(255, 0, 0);
+    }
+    70% {
+      -moz-box-shadow: 0 0 0 30px rgba(204, 169, 44, 0);
+      box-shadow: 0 0 0 30px rgba(204, 169, 44, 0);
+    }
+    100% {
+      -moz-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+      box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+    }
   }
 }
